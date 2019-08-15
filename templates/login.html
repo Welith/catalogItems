@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/user_style.css')}}" type="text/css">
+    <script src="https://apis.google.com/js/client:platform.js?onload=start" async defer>
+    </script>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+    <script src="{{url_for('static', filename='js/app.js')}}"></script>
+    <title>Login</title>
+</head>
+
+<body id="login">
+    <div class="login">
+        <div class="login-screen">
+            {% with messages = get_flashed_messages() %}
+            {% if messages %}
+            <div class="alert alert-success scs-msg" role="alert">
+                <ul>
+                    {% for message in messages %}
+                    <li><strong>{{message}}</strong></li>
+                    {% endfor %}
+                </ul>
+            </div>
+            {% endif %}
+            {% endwith %}
+            <div class="app-title">
+                <h1>Login</h1>
+            </div>
+            <div class="login-form">
+                <div class="control-group">
+                    <!-- GOOGLE PLUS SIGN IN--><div class="g-signin2" data-onsuccess="onSignIn" data-theme="dark"></div>
+                    <button id="signinButton" data-state="{{STATE}}" class="btn btn-sm btn-danger">Sign in with
+                        Google</button>
+                    <div id="result"></div>
+                    <!--END GOOGLE PLUS SIGN IN -->
+                    <!--FACEBOOK SIGN IN -->
+                    </br>
+                    <button id="fbButton" class="btn btn-sm btn-primary">
+                        <fb:login-button scope="public_profile,email" onlogin="sendTokenToServer();">
+                            <a href='javascript:sendTokenToServer()'>Login with Facebook</a>
+
+                        </fb:login-button>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <script>
+        window.fbAsyncInit = function () {
+            FB.init({
+                appId: '683180828831468',
+                cookie: true,  // enable cookies to allow the server to access 
+                // the session
+                xfbml: true,  // parse social plugins on this page
+                version: 'v4.0' // use version 2.2
+            });
+        };
+        // Load the SDK asynchronously
+        (function (d, s, id) {
+            var js, fjs = d.getElementsByTagName(s)[0];
+            if (d.getElementById(id)) return;
+            js = d.createElement(s); js.id = id;
+            js.src = "//connect.facebook.net/en_US/sdk.js";
+            fjs.parentNode.insertBefore(js, fjs);
+        }(document, 'script', 'facebook-jssdk'));
+        // Here we run a very simple test of the Graph API after login is
+        // successful.  See statusChangeCallback() for when this call is made.
+        function sendTokenToServer() {
+            var access_token = FB.getAuthResponse()['accessToken'];
+            console.log(access_token)
+            $('#signinButton').attr('style', 'display: none');
+            $('#fbButton').attr('style', 'display: none');
+            console.log('Welcome!  Fetching your information.... ');
+            FB.api('/me', function (response) {
+                console.log('Successful login for: ' + response.name);
+                $.ajax({
+                    type: 'POST',
+                    url: '/fbconnect?state={{STATE}}',
+                    processData: false,
+                    data: access_token,
+                    contentType: 'application/octet-stream; charset=utf-8',
+                    success: function (result) {
+                        // Handle or verify the server response if necessary.
+                        if (result) {
+                            $('#result').html('Login Successful!</br>' + result + '</br>Redirecting...')
+                            setTimeout(function () {
+                                window.location.href = "/categories";
+                            }, 4000);
+
+                        } else {
+                            $('#result').html('Failed to make a server-side call. Check your configuration and console.');
+                        }
+                    }
+
+                });
+            });
+        }
+    </script>
+    <!--END FACEBOOK SIGN IN -->
+</body>
+
+</html>

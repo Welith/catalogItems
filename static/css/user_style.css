@@ -1,0 +1,107 @@
+/* Footer */
+
+.my-footer {
+    color: white;
+    background-color: #007bff !important;
+}
+
+html, body, #page, header {
+    height: 100%;
+}
+
+#page {
+    position: relative;
+}
+
+#content {
+    padding-bottom: 130px;
+}
+
+/* FOOTER HEIGHT */
+
+footer {
+    bottom: 0;
+}
+
+/* Item listing settings */
+
+img {
+    width: 200px !important;
+    height: 200px !important;
+    object-fit: cover !important;
+}
+
+.card-text {
+    white-space: nowrap;
+    width: auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.card-body {
+    text-align: center !important;
+}
+
+img.centered-img {
+    padding-top: 10px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.inner-boxes:nth-child(n+4) {
+    padding-top: 10px;
+}
+
+#page-nav {
+    margin-left: 50%;
+    padding-top: 10px;
+}
+
+#content {
+    background-color: #fbeec1
+}
+
+#first {
+    float: left;
+}
+
+#second {
+    float: left;
+}
+
+/* Login */
+
+#login {
+    font-family: Arial;
+    background-color: #5bc0de;
+    padding: 50px;
+}
+
+.login {
+    margin: 20px auto;
+    width: 300px;
+}
+
+.login-screen {
+    background-color: #FFF;
+    padding: 20px;
+    border-radius: 5px
+}
+
+.app-title {
+    text-align: center;
+    color: #777;
+}
+
+.login-form {
+    text-align: center;
+}
+
+.control-group {
+    margin-bottom: 10px;
+}
+
+.flex-label {
+    display: flex !important;
+}

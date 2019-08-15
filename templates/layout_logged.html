@@ -1,0 +1,168 @@
+<!doctype html>
+<html>
+
+<head>
+    {% block head %}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" href="{{url_for('static', filename='css/user_style.css')}}" type="text/css">
+    <script src="https://apis.google.com/js/client:platform.js?onload=start" async defer>
+    </script>
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+    <script src="{{url_for('static', filename='js/app.js')}}"></script>
+    <title>{% block title %}{% endblock %} - My Webpage</title>
+    {% endblock %}
+</head>
+
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary sticky-top">
+        <a class="navbar-brand" href="/">
+            <h1>My Sports Shop</h1>
+        </a>
+        <button class="btn btn-lg btn-success" data-toggle="modal" id="mainAddButton" data-target="#addItem"
+            data-action="{{url_for('addItem')}}" data-redirect='{{url_for("showCategories", page=1)}}'>Add Item</button>
+        <ul class="navbar-nav ml-auto mt-2 mt-lg-0">
+            <li class="nav-item active">
+                <button class='btn btn-lg btn-danger' data-toggle="modal" id="mainLogoutButton" data-target="#logout"
+                    data-action="{{url_for('logout')}}" data-redirect="{{url_for('showLogin')}}">Logout</button>
+            </li>
+        </ul>
+    </nav>
+    <div id="content">
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+        <div class="alert alert-success scs-msg" role="alert">
+            <ul>
+                {% for message in messages %}
+                <li><strong>{{message}}</strong></li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endif %}
+        {% endwith %}
+        <div class="container text-center" style="padding-top: 30px">
+            <div class="row">
+                <div class="col-12 col-sm-3">
+                    <div class="card mb-3">
+                        <div class="card-header bg-success text-white text-uppercase"><i class="fa fa-list"></i>
+                            Categories
+                        </div>
+                        <ul class="list-group category_block">
+                            {% for category in categories %}
+                            <li class="list-group-item"><a
+                                    href="{{url_for('categoryItems', category_id=category.id, page=1)}}">{{category.name}}</a>
+                            </li>
+                            {%endfor%}
+                        </ul>
+                    </div>
+                    <div class="card bg-light mb-3">
+                        <div class="card-header bg-success text-white text-uppercase">Last product</div>
+                        <div class="card-body" style="text-align: center;">
+                            <img class="img-fluid" src="{{latest_category_item.picture}}" />
+                            <h5 class="card-title"><a
+                                    href="{{url_for('itemIndex', category_id = latest_category_item.category_id, item_id = latest_category_item.id)}}"
+                                    title="View Product">{{latest_category_item.title}}</a>
+                            </h5>
+                            <p class="card-text">{{latest_category_item.description}}</p>
+                            <p class="bloc_left_price btn btn-danger">${{latest_category_item.price}}</p>
+                        </div>
+                    </div>
+                </div>
+                {% block content %}
+                {% endblock %}
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="addItem" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addModalLabel">Add new item</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form class="form-signin" method="post" role="form" id="addCatItemForm">
+                    <div class="modal-body">
+                        <div>
+                            <label class="flex-label" for="title">Name: *</label>
+                            <input class="form-control" name="title" type="text" id="addName">
+                        </div>
+                        </br>
+                        <div>
+                            <label class="flex-label" for="description">Description: *</label>
+                            <textarea class="form-control" name="description" id="addDescription"></textarea>
+                        </div>
+                        </br>
+                        <div>
+                            <label class="flex-label" for="price">Price: *</label>
+                            <input class="form-control" name="price" type="number" step=".01" min="0" id="addPrice">
+                        </div>
+                        </br>
+                        <div>
+                            <label class="flex-label" for="category_id">Category: *</label>
+                            <select class="form-control" name="category_id" id="addCategory">
+                                {% for category in categories %}
+                                <option value="{{category.id}}">{{category.name}}</option>
+                                {%endfor%}
+                            </select>
+                        </div>
+                        </br>
+                        <div>
+                            <label class="flex-label" for="picture">Picture URL: *</label>
+                            <input class="form-control" name="picture" type="text" id="addPicture" required>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary" id="addIt">Save changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!--Logout modal form-->
+    <div class="modal fade" id="logout" tabindex="-1" role="dialog" aria-labelledby="logoutModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="logoutModalLabel">Are you sure you want to logout?</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form class="form-signin" method="post" role="form" id="logoutForm">
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">No</button>
+                        <button type="submit" class="btn btn-primary" id="disconnect">Yes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!--Logout modal form-->
+    <div id="footer">
+        {% block footer %}
+        <footer class="footer font-small my-footer">
+            <div class="footer-copyright text-center py-3">
+                © 2019 Copyright: Borko
+            </div>
+        </footer>
+        {% endblock %}
+    </div>
+</body>
+
+</html>
