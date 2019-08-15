@@ -20,8 +20,8 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///./testDB.db'
 db.init_app(app)
 
-CLIENT_ID = json.loads(open('client_secrets.json', 'r').read())[
-    'web']['client_id']
+with app.open_resource('client_secrets.json') as f:    
+    CLIENT_ID = json.load(f)['web']['client_id']
 
 ''' Helpfull user methods used for user login '''
 #Creates a user if not existing 
